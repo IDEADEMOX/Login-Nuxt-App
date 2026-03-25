@@ -8,6 +8,12 @@
           </span>
           <button @click="handleLogout" class="logout-button">退出登录</button>
         </template>
+        <template v-else>
+          <div class="auth-links">
+            <NuxtLink to="/auth/login" class="btn">Login</NuxtLink>
+            <NuxtLink to="/auth/register" class="btn">Register</NuxtLink>
+          </div>
+        </template>
       </div>
     </header>
     <main class="main-content">
@@ -43,16 +49,22 @@ const loadUser = () => {
   }
 };
 const handleProfile = async () => {
-  if (!user.value?.email) {
-    return router.push("/auth/login");
+  if (!["/auth/login", "/auth/register"].includes(route.path)) {
+    if (!user.value?.email) {
+      return router.push("/auth/login");
+    }
+    await $fetch("/api/user/profile", {
+      method: "POST",
+      body: {
+        id: user.value?.id,
+      },
+    }).then((res) => {
+      const { code } = res;
+      if (code === 200) {
+        return router.push("/user/list");
+      }
+    });
   }
-  await $fetch("/api/user/profile", {
-    method: "POST",
-    body: {
-      email: user.value?.email,
-    },
-  });
-  console.log(router.currentRoute.value.path);
 };
 
 // 退出登录
@@ -73,8 +85,8 @@ watch(
   () => route.path, // 推荐用 useRoute() 的 path，更可靠
   async () => {
     loadUser();
-    await nextTick(); // 等待 DOM 更新
     handleProfile();
+    await nextTick(); // 等待 DOM 更新
   },
   { immediate: true }, // 重要！让 watch 一开始就执行
 );
@@ -127,5 +139,25 @@ watch(
 .main-content {
   flex: 1;
   padding: 1rem;
+}
+
+.auth-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn {
+  padding: 12px 24px;
+  background-color: #4caf50;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #45a049;
 }
 </style>
