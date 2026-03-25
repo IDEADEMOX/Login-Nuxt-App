@@ -1,6 +1,11 @@
 <template>
   <div class="layout-container">
     <header class="header">
+      <div class="header-left">
+        <div class="logo">Nuxt App</div>
+        <NuxtLink to="/user/list" @click="handleClick">用户列表</NuxtLink>
+      </div>
+
       <div class="header-right">
         <template v-if="isLoggedIn">
           <span class="username">
@@ -48,6 +53,7 @@ const loadUser = () => {
     }
   }
 };
+
 const handleProfile = async () => {
   if (!["/auth/login", "/auth/register"].includes(route.path)) {
     if (!user.value?.email) {
@@ -58,13 +64,13 @@ const handleProfile = async () => {
       body: {
         id: user.value?.id,
       },
-    }).then((res) => {
-      const { code } = res;
-      if (code === 200) {
-        return router.push("/user/list");
-      }
     });
   }
+};
+
+// 点击用户列表跳转
+const handleClick = () => {
+  router.push("/user/list");
 };
 
 // 退出登录
@@ -104,8 +110,19 @@ watch(
   background-color: #f8f9fa;
   border-bottom: 1px solid #e9ecef;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.header-left {
+  display: flex;
+  gap: 1rem;
 }
 
 .header-right {
