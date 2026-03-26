@@ -7,6 +7,13 @@ export default defineEventHandler(async (event) => {
     // 非 api 开头的请求，直接响应
     return;
   }
+  const headers = getRequestHeaders(event);
+  // 检查是否已经通过鉴权
+  const passed = headers["x-auth-passed"];
+  if (passed) {
+    // 已通过鉴权，直接响应
+    return;
+  }
   const hasBody = ["POST", "PUT", "PATCH"].includes(event.method);
   const body = hasBody ? await readBody(event) : null;
   console.log("Request body: ", body);
