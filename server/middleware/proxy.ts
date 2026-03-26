@@ -12,13 +12,9 @@ export default defineEventHandler(async (event) => {
   console.log("Request body: ", body);
   // api 开头的请求，通过 OpenResty 鉴权后转发
   const targetBase = "http://localhost:8080";
-  const routePath = hasBody ? path : path + url.search;
-  const targetURL = targetBase + routePath;
-  const headers = getRequestHeaders(event);
+  const targetURL = targetBase + path + url.search;
+  // const headers = getRequestHeaders(event);
   return proxyRequest(event, targetURL, {
-    headers,
-    fetchOptions: {
-      body,
-    },
+    // headers,
   });
 });
