@@ -23,5 +23,13 @@ export default defineEventHandler(async (event) => {
   // const headers = getRequestHeaders(event);
   return proxyRequest(event, targetURL, {
     // headers,
+    onResponse: (response: any) => {
+      // 响应拦截器，处理401错误
+      if (response.status === 401) {
+        console.log("401 Unauthorized detected");
+        // 刷新 refreshToken 可以写这里
+      }
+      return response;
+    },
   });
 });
